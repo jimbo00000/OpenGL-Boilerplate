@@ -13,6 +13,8 @@ GLFWwindow* g_pWindow = NULL;
 ///@return 0 for success, non-zero otherwise
 int initGL(int argc, char** argv)
 {
+    (void)argc;
+    (void)argv;
     return 0;
 }
 

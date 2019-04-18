@@ -44,10 +44,16 @@ ELSEIF( UNIX )
     FIND_PACKAGE( OpenGL REQUIRED )
     INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIRS} )
     LINK_DIRECTORIES   ( "/usr/local/lib" )
-    SET( FRAMEWORK_LIBS glfw3 )
+    SET( FRAMEWORK_LIBS glfw )
 
     SET( PLATFORM_LIBS ${FRAMEWORK_LIBS} ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES} X11 -pthread -ldl)
 ENDIF()
+
+if(MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
 
 ADD_EXECUTABLE( ${PROJECT_NAME} src/glfw3_boilerplate.cpp )
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${PLATFORM_LIBS} )
