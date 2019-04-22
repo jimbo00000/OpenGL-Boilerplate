@@ -5,6 +5,7 @@
 #  define NOMINMAX
 #  include <windows.h>
 #endif
+#include <stdio.h>
 
 #include <GLFW/glfw3.h>
 
@@ -26,6 +27,17 @@ void display()
 
 int main(int argc, char *argv[])
 {
+    {
+        printf("Compiled against GLFW %i.%i.%i\n",
+            GLFW_VERSION_MAJOR,
+            GLFW_VERSION_MINOR,
+            GLFW_VERSION_REVISION);
+        int major, minor, revision;
+        glfwGetVersion(&major, &minor, &revision);
+        printf("Running against GLFW %i.%i.%i\n", major, minor, revision);
+        printf("%s\n", glfwGetVersionString());
+    }
+
     if (!glfwInit())
         return -1;
 
