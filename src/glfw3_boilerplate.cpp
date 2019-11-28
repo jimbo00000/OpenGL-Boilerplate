@@ -7,9 +7,20 @@
 #endif
 #include <stdio.h>
 
+#include <algorithm>
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <stdio.h>
 
 GLFWwindow* g_pWindow = NULL;
+int g_red = 0;
+float g_green = .5f;
+
+static void error_callback(int error, const char* description)
+{
+    (void)error;
+    fprintf(stderr, "Error: %s\n", description);
+}
 
 ///@return 0 for success, non-zero otherwise
 int initGL(int argc, char** argv)
@@ -21,8 +32,44 @@ int initGL(int argc, char** argv)
 
 void display()
 {
-    glClearColor(0, 1, 1, 1);
+    glClearColor((float)g_red, (float)g_green, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void resize(GLFWwindow* window, int w, int h)
+{
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
+    printf("resize: %d %d   %d %d\n", w,h, width, height);
+}
+
+void mouseWheel(GLFWwindow* window, double x, double y)
+{
+    (void)window;
+    (void)x;
+    g_green += .1f* (float)y;
+    g_green = std::max(0.f, g_green);
+    g_green = std::min(1.f, g_green);
+}
+
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    (void)window;
+    (void)scancode;
+    (void)action;
+    (void)mods;
+
+    switch (key)
+    {
+    case GLFW_KEY_ESCAPE:
+        exit(0);
+        break;
+
+    default:
+        g_red = 1 - g_red;
+        break;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -38,6 +85,8 @@ int main(int argc, char *argv[])
         printf("%s\n", glfwGetVersionString());
     }
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
         return -1;
 
@@ -48,7 +97,11 @@ int main(int argc, char *argv[])
     glfwMakeContextCurrent(g_pWindow);
     glfwSwapInterval(0);
 
-    while (glfwWindowShouldClose(g_pWindow) == false)
+    glfwSetKeyCallback(g_pWindow, keyboard);
+    glfwSetScrollCallback(g_pWindow, mouseWheel);
+    glfwSetWindowSizeCallback(g_pWindow, resize);
+
+    while (glfwWindowShouldClose(g_pWindow) == 0)
     {
         display();
         glfwPollEvents();
